@@ -44,19 +44,19 @@ fdisk redpill-template.img
     Select (default p): p
     Partition number (1-4, default 1): 1
     First sector (2048-677887, default 2048):
-    Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-677887, default 2048): +330M
+    Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-1048575, default 2048): +330M
 
     Command (m for help): n
     Select (default p): p
     Partition number (2-4, default 2): 2
-    First sector (677888-1038335, default 100352):
-    Last sector, +/-sectors or +/-size{K,M,G,T,P} (677888-1038335, default 677888): +176M
+    First sector (677888-1040383, default 677888):
+    Last sector, +/-sectors or +/-size{K,M,G,T,P} (677888-1040575, default 677888): +177M
 
     Command (m for help): n
     Select (default p): p
     Partition number (3,4, default 3): 3
-    First sector (1038336-1047999, default 253952):
-    Last sector, +/-sectors or +/-size{K,M,G,T,P} (1038336-1047999, default 1038336):
+    First sector (1040384-1048575, default 253952):
+    Last sector, +/-sectors or +/-size{K,M,G,T,P} (1040384-1048575, default 1038336):
 
     Command (m for help): w
     The partition table has been altered.
@@ -64,10 +64,9 @@ fdisk redpill-template.img
 
 fdisk -l redpill-template.img  # verify if the result looks like below
    Device                Boot  Start    End Sectors Size Id Type
-   redpill-template.img1 *       2048  677887  675840  330M 83 Linux
-   redpill-template.img2       677888 1038335  360448  176M 83 Linux
-   redpill-template.img3      1038336 1047999    9664  4.7M 83 Linux
-
+   redpill-template.img1         2048  677887  675840  330M 83 Linux
+   redpill-template.img2       677888 1040383  360448  177M 83 Linux
+   redpill-template.img3      1040384 1048575    9664  4.7M 83 Linux
 
 losetup -P /dev/loop8 redpill-template.img
 mkdosfs -F32 /dev/loop8p1
