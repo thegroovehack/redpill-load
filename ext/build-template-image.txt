@@ -29,14 +29,6 @@ The following settings were detected by ./configure for the binary release:
     With stack smashing protector: No
     *******************************************************
 
-mkdir build-pc && cd build-pc
-../configure --prefix=$PWD/usr -sbindir=$PWD/sbin --sysconfdir=$PWD/etc --disable-werror
-make && make install
-cd ..
-mkdir build && cd build
-../configure --prefix=$PWD/usr -sbindir=$PWD/sbin --sysconfdir=$PWD/etc --disable-werror --with-platform=efi --target=x86_64
-make && make install
-
 ########################################################################################################################
 ### Create the image
 ########################################################################################################################
@@ -51,20 +43,20 @@ fdisk redpill-template.img
     Command (m for help): n
     Select (default p): p
     Partition number (1-4, default 1): 1
-    First sector (2048-262143, default 2048):
-    Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-262143, default 262143): +48M
+    First sector (2048-677887, default 2048):
+    Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-1048575, default 2048): +330M
 
     Command (m for help): n
     Select (default p): p
     Partition number (2-4, default 2): 2
-    First sector (100352-262143, default 100352):
-    Last sector, +/-sectors or +/-size{K,M,G,T,P} (100352-262143, default 262143): +75M
+    First sector (677888-1040383, default 677888):
+    Last sector, +/-sectors or +/-size{K,M,G,T,P} (677888-1040575, default 677888): +177M
 
     Command (m for help): n
     Select (default p): p
     Partition number (3,4, default 3): 3
-    First sector (253952-262143, default 253952):
-    Last sector, +/-sectors or +/-size{K,M,G,T,P} (253952-262143, default 262143):
+    First sector (1040384-1048575, default 253952):
+    Last sector, +/-sectors or +/-size{K,M,G,T,P} (1040384-1048575, default 1038336):
 
     Command (m for help): w
     The partition table has been altered.
@@ -72,9 +64,9 @@ fdisk redpill-template.img
 
 fdisk -l redpill-template.img  # verify if the result looks like below
    Device                Boot  Start    End Sectors Size Id Type
-   redpill-template.img1        2048 100351   98304  48M 83 Linux
-   redpill-template.img2      100352 253951  153600  75M 83 Linux
-   redpill-template.img3      253952 262143    8192   4M 83 Linux
+   redpill-template.img1         2048  677887  675840  330M 83 Linux
+   redpill-template.img2       677888 1040383  360448  177M 83 Linux
+   redpill-template.img3      1040384 1048575    9664  4.7M 83 Linux
 
 losetup -P /dev/loop8 redpill-template.img
 mkdosfs -F32 /dev/loop8p1
@@ -85,18 +77,14 @@ mkfs.ext2 /dev/loop8p2
 ########################################################################################################################
 mkdir temp-mount-p1
 mount /dev/loop8p1 ./temp-mount-p1
-./grub-2.06/build-pc/grub-install \
-    --target=i386-pc --recheck -s \
-    --boot-directory=$PWD/temp-mount-p1/boot \
+./grub-2.06/grub-install \
+    -d ./grub-2.06/grub-core \
+    --target=i386-pc --no-floppy -s \
+    --root-directory=$PWD/temp-mount-p1 \
     /dev/loop8
-
-./grub-2.06/build/grub-install \
-    --target=x86_64-efi \
-	--efi-directory=$PWD/temp-mount-p1 \
-    --removable --no-nvram -s --no-bootsector --boot-directory=$PWD/temp-mount-p1/boot
+# small note: --root-directory MUST be an absolute path (or it will create it in /)
 sync
 umount /dev/loop8p1
-losetup -d /dev/loop8
 
 ########################################################################################################################
 ### Pack image
